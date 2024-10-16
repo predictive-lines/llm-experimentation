@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from pinecone import Pinecone, PodSpec
-from torch import Tensor
 from llama_index.llms.huggingface import HuggingFaceInferenceAPI
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.vector_stores.pinecone import PineconeVectorStore
@@ -40,5 +39,5 @@ index = VectorStoreIndex.from_documents(
     documents, storage_context=storage_context, show_progress=True
 )
 query_engine = index.as_query_engine()
-response = query_engine.query("How to implement a process change at a service-based company without a change management process?")
+response = query_engine.query("How to implement a process change at a service-based company that does not currently have a change management process?")
 print(response)

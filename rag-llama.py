@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import pandas as pd  # Import pandas for reading Excel files
 from pinecone import Pinecone, PodSpec
 from llama_index.llms.huggingface import HuggingFaceInferenceAPI
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
@@ -32,6 +33,52 @@ if index_name not in pc.list_indexes().names():
 pinecone_index = pc.Index(index_name)
 # using 2024 directory because it only contains PDFs.  Ultimately would need a file type filter here and make sure that the necessary libraries are imported to process each type.
 documents_folder = Path('C:/Users/JustinMiller/OneDrive - Predictive Lines/Internal/2024/resources')
+
+# Function to read and process .xlsx files
+def process_excel_file(file_path):
+    df = pd.read_excel(file_path)
+    # Convert the DataFrame to a list of dictionaries
+    records = df.to_dict(orient='records')
+    return records
+
+# Example usage of the function
+excel_file_path = 'path/to/your/file.xlsx'
+excel_data = process_excel_file(excel_file_path)
+documents = [{'text': str(record)} for record in excel_data]
+
+def process_directory(directory_path):
+    documents = []
+    for file_path in directory_path.glob('*'):
+        if file_path.suffix == '.xlsx':
+            documents.extend(process_excel_file(file_path))
+        elif file_path.suffix in ['.pdf', '.docx', '.pptx']:
+            documents.extend(process_other_files(file_path))
+    return documents
+
+def process_excel_file(file_path):
+    df = pd.read_excel(file_path)
+    records = df.to_dict(orient='records')
+    return [{'text': str(record)} for record in records]
+
+def process_other_files(file_path):
+    # Placeholder for processing PDF, DOCX, PPTX files
+    # Implement the actual processing logic here
+    return [{'text': f'Processed content of {file_path.name}'}]
+
+def main():
+    documents_folder = Path('C:/Users/JustinMiller/OneDrive - Predictive Lines/Internal/2024/resources')
+    documents = process_directory(documents_folder)
+    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    storage_context = StorageContext.from_defaults(vector_store=vector_store)
+    index = VectorStoreIndex.from_documents(
+        documents, storage_context=storage_context, show_progress=True
+    )
+    query_engine = index.as_query_engine()
+    response = query_engine.query("How to implement a process change at a service-based company that does not currently have a change management process?")
+    print(response)
+
+if __name__ == "__main__":
+    main()
 documents = SimpleDirectoryReader(documents_folder).load_data()
 vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
 storage_context = StorageContext.from_defaults(vector_store=vector_store)

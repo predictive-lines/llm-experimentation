@@ -1,5 +1,5 @@
-from torch import Tensor
+import torch
 
 # Example usage of Tensor
-t = Tensor([1, 2, 3])
+t = torch.tensor([1, 2, 3])
 print(t)

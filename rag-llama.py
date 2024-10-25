@@ -30,7 +30,7 @@ def process_other_files(file_path):
     return documents
 
 def main():
-    documents_folder = Path('C:/Users/JustinMiller/OneDrive - Predictive Lines/Internal/2023/resources')
+    documents_folder = Path('C:/Users/JustinMiller/OneDrive - Predictive Lines/Internal/2024/resources')
     documents = process_directory(documents_folder)
     # This can be done by exporting the token in your terminal or command prompt using commands like export HUGGING_FACE_TOKEN=your_actual_token_here for Linux/Mac or set HUGGING_FACE_TOKEN=your_actual_token_here for Windows.
     # HF_TOKEN = os.environ.get("HUGGING_FACE_TOKEN", '<HUGGINGFACE_TOKEN>')
